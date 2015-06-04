@@ -1,0 +1,16 @@
+6cdd7ca619afa5d7fad32fb9d9bdcb8e *DESCRIPTION
+1c2302d423beac5b387adf2b572dd339 *NAMESPACE
+f24139f68369459656465b3d9bdccea5 *NEWS
+bf0a85ec7776fcf969a391eaf5de2e68 *R/ArgumentCheck.R
+c816f271e4f64ae291547bbe791cc707 *R/addError.R
+34af963be18186c06bf272f741b55f09 *R/addWarning.R
+1eb692f9a997b954914be12f2d355053 *R/finishArgCheck.R
+fbfce3660f4067e78c90b6bba9b63978 *R/newArgCheck.R
+493704cd062f15eb2aff34f67ca3add8 *README.md
+3f8a4b81379134ab6a187b927f27d30f *build/vignette.rds
+5ee04059172803ba201f2792b323c65a *inst/doc/ArgumentChecking.R
+f29f568857956d030d91b06a80e191e7 *inst/doc/ArgumentChecking.Rmd
+40d192d929fbadc0f6f3eb7e32fcc34c *inst/doc/ArgumentChecking.html
+642f0b58e1220e2d154f7888289e0c4b *man/ArgumentCheck.Rd
+2d2c7439c1801e09cd610bb57b13870e *man/newArgCheck.Rd
+f29f568857956d030d91b06a80e191e7 *vignettes/ArgumentChecking.Rmd

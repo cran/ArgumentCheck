@@ -1,0 +1,7 @@
+### 0.9 (1 June 2015)
+
+* Initial Release includes the following functions:
+  * `newArgCheck`
+  * `addError`
+  * `addWarning`
+  * `finishArgCheck`
