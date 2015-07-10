@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-<title>    toc: yes</title>
+<title></title>
 
 <script type="text/javascript">
 window.onload = function() {
@@ -201,26 +201,7 @@ hr {
 </head>
 
 <body>
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{Checking Arguments in R Functions}
--->
-
-<hr/>
-
-<p>title: Checking Arguments in R Functions
-output:
-  pdf_document:
-    fig_caption: yes
-    number_section: yes
-    toc: no
-  html_document:
-    fig_caption: yes
-    number_section: yes</p>
-
-<h2>    toc: yes</h2>
-
-<p>Whenever I write a function, it often seems that unless I&#39;m extraordinarily thoughtful, I write code that works well for my intent at the time, but as I test and further develop the code, I find that the function is hardly foolproof.  Most commonly, when I give my code to someone else to use, they inevitably use it in some way I hadn&#39;t anticipated.  This results in the function producing an error.  Or worse, the function executes, but quietly produces bad input.</p>
+<p>Whenever I write a function, it often seems that unless I&#39;m extraordinarily thoughtful, I write code that works well for my intent at the time, but as I test and further develop the code, I find that the function is hardly foolproof.  Most commonly, when I give my code to someone else to use, they inevitably use it in some way I hadn&#39;t anticipated.  This results in the function producing an error the user doesn&#39;t understand.  Or worse, the function executes, but quietly produces bad input.  These kinds of problems can be a hindrance to getting people to use your package.</p>
 
 <p>Another common problem I&#39;ve noticed is that an argument may be valid for a certain set of values, but I don&#39;t limit the argument to just those values.  For example, in my <a href="https://github.com/nutterb/StudyPlanning"><code>StudyPlanning</code> package</a> package, I use an <code>alpha</code> argument to define the Type I error in statistical tests.  Calculations <code>alpha</code> are only valid when 0 &lt; <code>alpha</code> &lt; 1.  Failing to restrict this argument properly would allow a well-intentioned user to enter 5.0, perhaps thinking the significance level is 5% instead of 0.05.  This vignette will give examples of how to check a function&#39;s arguments and return useful warnings and messages to the user that in a way that assists the user in the proper use of the function.</p>
 
@@ -274,14 +255,18 @@ output:
   Check &lt;- ArgumentCheck::newArgCheck()
 
   #* Add an error if height &lt; 0
-  Check &lt;- ArgumentCheck::addError(height &lt; 0,
-             msg = &quot;&#39;height&#39; must be &gt;= 0&quot;,
-             argcheck = Check)
+  if (height &lt; 0) 
+    ArgumentCheck::addError(
+      msg = &quot;&#39;height&#39; must be &gt;= 0&quot;,
+      argcheck = Check
+    )
 
   #* Add an error if radius &lt; 0
-  Check &lt;- ArgumentCheck::addError(radius &lt; 0,
-             msg = &quot;&#39;radius&#39; must be &gt;= 0&quot;,
-             argcheck = Check)
+  if (radius &lt; 0)
+    ArgumentCheck::addError(
+      msg = &quot;&#39;radius&#39; must be &gt;= 0&quot;,
+      argcheck = Check
+    )
 
   #* Return errors and warnings (if any)
   ArgumentCheck::finishArgCheck(Check)
@@ -310,8 +295,9 @@ output:
                 radius = -4)
 </code></pre>
 
-<pre><code>## Warning in if (expr) {: the condition has length &gt; 1 and only the first
-## element will be used
+<pre><code>## Warning in if (height &lt; 0) ArgumentCheck::addError(msg = &quot;&#39;height&#39; must be
+## &gt;= 0&quot;, : the condition has length &gt; 1 and only the first element will be
+## used
 </code></pre>
 
 <pre><code>## Error: 
@@ -324,8 +310,9 @@ output:
                 radius = 8)
 </code></pre>
 
-<pre><code>## Warning in if (expr) {: the condition has length &gt; 1 and only the first
-## element will be used
+<pre><code>## Warning in if (height &lt; 0) ArgumentCheck::addError(msg = &quot;&#39;height&#39; must be
+## &gt;= 0&quot;, : the condition has length &gt; 1 and only the first element will be
+## used
 </code></pre>
 
 <pre><code>## [1] 603.1858 603.1858
@@ -335,24 +322,28 @@ output:
                 radius = c(8, 4))
 </code></pre>
 
-<pre><code>## Warning in if (expr) {: the condition has length &gt; 1 and only the first
-## element will be used
+<pre><code>## Warning in if (height &lt; 0) ArgumentCheck::addError(msg = &quot;&#39;height&#39; must be
+## &gt;= 0&quot;, : the condition has length &gt; 1 and only the first element will be
+## used
 </code></pre>
 
-<pre><code>## Warning in if (expr) {: the condition has length &gt; 1 and only the first
-## element will be used
+<pre><code>## Warning in if (radius &lt; 0) ArgumentCheck::addError(msg = &quot;&#39;radius&#39; must be
+## &gt;= 0&quot;, : the condition has length &gt; 1 and only the first element will be
+## used
 </code></pre>
 
 <pre><code>## [1]  603.1858 -150.7964
 </code></pre>
 
-<p>As you can tell, the result depends on the length of the vectors and the value of the first element of the vectors.  In the third example, the function evaluates the volume even though we passed an inappropriate value in height.  </p>
+<p>As you can tell, the result depends on the length of the vectors and the value of the first element of the vectors.  In the third example, the function evaluates the volume even though we passed an inappropriate value in <code>height</code>.  An important point to make now would be that you might not always think of every situation when writing your argument checks.  But, if you look at the warning messages returned above, they aren&#39;t very friendly to read.  If you&#39;re getting unfriendly warning or error messages, that&#39;s probably a place that needs a better argument check.</p>
 
 <p>At this point, we have two options we can consider.  We could terminate the function if <em>any</em> negative values are noticed, perhaps by adding <code>any</code> to our logical expression, as below:</p>
 
-<pre><code class="r">  Check &lt;- ArgumentCheck::addError(any(height &lt; 0),
-             msg = &quot;&#39;height&#39; must be &gt;= 0&quot;,
-             argcheck = Check)
+<pre><code class="r">if (any(height &lt; 0))
+  ArgumentCheck::addError(
+    msg = &quot;&#39;height&#39; must be &gt;= 0&quot;,
+    argcheck = Check
+  )
 </code></pre>
 
 <p>Alternatively, we can allow the function to process, but we can adjust the inputs so that they don&#39;t include the negative values.  For something like this, it is better to use the <code>addWarning</code> function instead of <code>addError</code>.</p>
@@ -363,16 +354,24 @@ output:
   Check &lt;- ArgumentCheck::newArgCheck()
 
   #* Add an warning if height &lt; 0
-  Check &lt;- ArgumentCheck::addWarning(any(height &lt; 0),
-             msg = &quot;&#39;height&#39; must be &gt;= 0. Negative values have been set to NA&quot;,
-             argcheck = Check)
-  if (any(height &lt; 0)) height[height &lt; 0] &lt;- NA
+  if (any(height &lt; 0)){
+    ArgumentCheck::addWarning(
+      msg = &quot;&#39;height&#39; must be &gt;= 0. Negative values have been set to NA&quot;,
+      argcheck = Check
+    )
+
+    height[height &lt; 0] &lt;- NA
+  }
 
   #* Add an error if radius &lt; 0
-  Check &lt;- ArgumentCheck::addWarning(any(radius &lt; 0),
-             msg = &quot;&#39;radius&#39; must be &gt;= 0. Negative values have been set to NA&quot;,
-             argcheck = Check)
-  if (any(radius &lt; 0)) radius[radius &lt; 0] &lt;- NA
+  if (any(radius &lt; 0)){
+    ArgumentCheck::addWarning(
+      msg = &quot;&#39;radius&#39; must be &gt;= 0. Negative values have been set to NA&quot;,
+      argcheck = Check
+    )
+
+    radius[radius &lt; 0] &lt;- NA
+  }
 
   #* Return errors and warnings (if any)
   ArgumentCheck::finishArgCheck(Check)
@@ -394,7 +393,11 @@ cylinder.volume(height = c(3, -3, 8, -1),
 <pre><code>## [1] 150.7964       NA       NA       NA
 </code></pre>
 
-<p>Using the warning instead of the error, the function is able to evaluate where the values are appropriate while still informing the user of any changes made to the inputs.  Whether or not this is a good idea is up for debate, and in most cases, I would argue that it is <em>not</em> a good idea.  Generally speaking, I feel it is better to require the user to decide when alter the inputs, but there are a couple of cases where I&#39;ve done it anyway.  For instance, in functions I&#39;ve written in the <code>StudyPlanning</code> package, I said earlier that I use an <code>alpha</code> argument that accepts values between 0 and 1.  Once, I wanted to look at the change in power as <code>alpha</code> varied from 0 to 0.3, incremented by 0.05.  However, when I used <code>alpha = seq(0, 0.3, by=.05)</code>, I got an error.  <code>alpha = 0</code> is not a valid value for calculating power.  The <code>alpha</code> argument is a case where I remove any values 0 or 1 and print a warning indicating the change.  </p>
+<p>Notice how much cleaner that warning message looks now!</p>
+
+<p>Using the warning instead of the error, the function is able to evaluate where the values are appropriate while still informing the user of any changes made to the inputs.  Whether or not this is a good idea is up for debate, and in most cases, I would argue that it is <em>not</em> a good idea.  Generally speaking, I feel it is better to require the user to decide when to alter the inputs, but there are a couple of cases where I&#39;ve done it anyway.  For instance, in functions I&#39;ve written in the <code>StudyPlanning</code> package, I said earlier that I use an <code>alpha</code> argument that accepts values between 0 and 1.  Once, I wanted to look at the change in power as <code>alpha</code> varied from 0 to 0.3, incremented by 0.05.  However, when I used <code>alpha = seq(0, 0.3, by=.05)</code>, I got an error.  <code>alpha = 0</code> is not a valid input for calculating power.  The <code>alpha</code> argument is a case where I remove any values 0 or 1 and print a warning indicating the change. </p>
+
+<p>Good argument checks are a service to your users and yourself.  A good set of argument checks can prevent users from entering values you didn&#39;t intend to be entered (and causing all manner of cryptic error messages to debug).  Good argument checks and returned messages also make it easier for the user to understand where the problems in their code are.  The better you communicate with your user, the more likely your work is to be used by others.</p>
 
 </body>
 
